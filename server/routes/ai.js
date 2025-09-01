@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
+const Analysis = require('../models/Analysis');
+const auth = require('../middleware/auth');
 
 router.post("/summarize", async (req, res) => {
   try {
@@ -26,6 +28,42 @@ router.post("/summarize", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "AI summarization failed" });
+  }
+});
+
+// Save AI insight
+router.post("/insight", auth, async (req, res) => {
+  try {
+    const { uploadId, summary, chartType, xAxis, yAxis } = req.body;
+    
+    const analysis = new Analysis({
+      user: req.user.id,
+      upload: uploadId,
+      summary,
+      chartType,
+      xAxis,
+      yAxis
+    });
+    
+    await analysis.save();
+    res.json({ msg: 'Insight saved successfully', insight: analysis });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to save insight" });
+  }
+});
+
+// Get user's AI insights
+router.get("/insights", auth, async (req, res) => {
+  try {
+    const insights = await Analysis.find({ user: req.user.id })
+      .populate('upload', 'filename')
+      .sort({ createdAt: -1 });
+      
+    res.json(insights);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch insights" });
   }
 });
 

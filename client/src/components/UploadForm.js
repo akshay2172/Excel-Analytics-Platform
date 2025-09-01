@@ -6,7 +6,7 @@ import ThreeDChart from './ThreeDChart';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-// --- Chart.js registration ---
+// Chart.js registration
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +16,8 @@ import {
   LineElement,
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
+  Title
 } from 'chart.js';
 
 ChartJS.register(
@@ -27,10 +28,11 @@ ChartJS.register(
   LineElement,
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
+  Title
 );
 
-export default function UploadForm({ onUploaded }) {
+export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
   const [file, setFile] = useState(null);
   const [headers, setHeaders] = useState([]);
   const [parsedRows, setParsedRows] = useState([]);
@@ -38,12 +40,16 @@ export default function UploadForm({ onUploaded }) {
   const [yCol, setYCol] = useState('');
   const [chartData, setChartData] = useState(null);
   const [chartType, setChartType] = useState('bar');
-  const [aiSummary, setAiSummary] = useState('');   // ✅ state for AI summary
+  const [aiSummary, setAiSummary] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const auth = useSelector(s => s.auth);
 
   async function upload(e) {
     e.preventDefault();
     if (!file) return alert('Select file');
+    
+    setIsLoading(true);
     const fd = new FormData();
     fd.append('file', file);
     try {
@@ -58,38 +64,97 @@ export default function UploadForm({ onUploaded }) {
       onUploaded && onUploaded();
     } catch (err) {
       alert(err.response?.data?.msg || err.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   function makeChart() {
     if (!xCol || !yCol) return alert('Select columns');
 
+    // Prepare data based on chart type
+    let data;
     if (chartType === 'scatter') {
-      setChartData({
+      data = {
         datasets: [
           {
-            label: yCol,
-            data: parsedRows.map(r => ({ x: Number(r[xCol]) || 0, y: Number(r[yCol]) || 0 })),
-            backgroundColor: "rgba(255,99,132,0.5)"
+            label: `${yCol} vs ${xCol}`,
+            data: parsedRows.map(r => ({ 
+              x: Number(r[xCol]) || 0, 
+              y: Number(r[yCol]) || 0 
+            })),
+            backgroundColor: "rgba(13, 148, 136, 0.6)",
+            borderColor: "rgba(13, 148, 136, 1)",
+            borderWidth: 1
           }
         ]
-      });
+      };
     } else {
       const labels = parsedRows.map(r => r[xCol]);
       const values = parsedRows.map(r => Number(r[yCol]) || 0);
-      setChartData({
+      
+      data = {
         labels,
-        datasets: [{ label: yCol, data: values, backgroundColor: "rgba(75,192,192,0.6)" }]
+        datasets: [{
+          label: yCol,
+          data: values,
+          backgroundColor: [
+            'rgba(13, 148, 136, 0.8)',
+            'rgba(101, 163, 13, 0.8)',
+            'rgba(234, 88, 12, 0.8)',
+            'rgba(200, 50, 93, 0.8)',
+            'rgba(126, 34, 206, 0.8)',
+            'rgba(20, 90, 180, 0.8)',
+          ],
+          borderColor: [
+            'rgba(13, 148, 136, 1)',
+            'rgba(101, 163, 13, 1)',
+            'rgba(234, 88, 12, 1)',
+            'rgba(200, 50, 93, 1)',
+            'rgba(126, 34, 206, 1)',
+            'rgba(20, 90, 180, 1)',
+          ],
+          borderWidth: 1
+        }]
+      };
+    }
+
+    // Set options based on chart type
+    const options = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: `${yCol} by ${xCol}`,
+          font: {
+            size: 16
+          }
+        },
+      },
+      maintainAspectRatio: false
+    };
+
+    setChartData({ data, options });
+    
+    // Save chart data for later use
+    if (onChartSave) {
+      onChartSave({
+        xAxis: xCol,
+        yAxis: yCol,
+        chartType: chartType
       });
     }
   }
 
   function renderChart() {
     if (!chartData) return null;
-    if (chartType === 'bar') return <Bar data={chartData} />;
-    if (chartType === 'line') return <Line data={chartData} />;
-    if (chartType === 'pie') return <Pie data={chartData} />;
-    if (chartType === 'scatter') return <Scatter data={chartData} />;
+    if (chartType === 'bar') return <Bar data={chartData.data} options={chartData.options} />;
+    if (chartType === 'line') return <Line data={chartData.data} options={chartData.options} />;
+    if (chartType === 'pie') return <Pie data={chartData.data} options={chartData.options} />;
+    if (chartType === 'scatter') return <Scatter data={chartData.data} options={chartData.options} />;
     if (chartType === '3d') return <ThreeDChart data={parsedRows} xCol={xCol} yCol={yCol} />;
   }
 
@@ -108,127 +173,191 @@ export default function UploadForm({ onUploaded }) {
     const canvas = await html2canvas(chartCanvas);
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF();
-    pdf.addImage(imgData, "PNG", 10, 10, 180, 100);
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
     pdf.save("chart.pdf");
   }
 
-  // ✅ AI summarization function
   async function generateSummary() {
-  try {
-    const res = await axios.post("http://localhost:5000/api/ai/summarize", {
-      text: JSON.stringify(parsedRows.slice(0, 35)) // send as text
-    }, {
-      headers: { Authorization: "Bearer " + auth.token }
-    });
-    setAiSummary(res.data.summary);
-  } catch (err) {
-    console.error(err);
-    alert("AI summarization failed");
+    if (!parsedRows.length) return;
+    
+    setIsGeneratingSummary(true);
+    try {
+      // Prepare data for AI summarization
+      const textData = parsedRows.slice(0, 20).map(row => 
+        Object.entries(row).map(([key, value]) => `${key}: ${value}`).join(', ')
+      ).join('; ');
+      
+      const res = await axios.post("http://localhost:5000/api/ai/summarize", {
+        text: textData
+      }, {
+        headers: { Authorization: "Bearer " + auth.token }
+      });
+      
+      setAiSummary(res.data.summary);
+      
+      // Save to AI insights
+      if (onInsightSave) {
+        onInsightSave({
+          summary: res.data.summary
+        });
+      }
+      
+    } catch (err) {
+      console.error(err);
+      alert("AI summarization failed");
+    } finally {
+      setIsGeneratingSummary(false);
+    }
   }
-}
-
 
   return (
-    <div className="mt-6 p-6 bg-gray-900 text-white rounded-2xl shadow-lg">
-      <form onSubmit={upload} className="flex flex-col sm:flex-row items-center gap-4">
-        <input
-          type="file"
-          accept=".xls,.xlsx"
-          onChange={e => setFile(e.target.files[0])}
-          className="text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 
-                     file:rounded-full file:border-0 
-                     file:text-sm file:font-semibold
-                     file:bg-teal-600 file:text-white
-                     hover:file:bg-teal-700"
-        />
-        <button
-          type="submit"
-          className="bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-lg font-semibold"
-        >
-          Upload & Parse
-        </button>
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">Upload Excel File</h2>
+      
+      <form onSubmit={upload} className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <label className="block flex-1">
+            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-4 text-center hover:border-green-400 transition-colors duration-300 cursor-pointer">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <i className="fas fa-file-excel text-green-600 text-xl"></i>
+              </div>
+              <p className="text-gray-600 mb-1">
+                {file ? file.name : "Click to select or drag & drop your Excel file"}
+              </p>
+              <p className="text-sm text-gray-400">Supports .xlsx, .xls files</p>
+              <input
+                type="file"
+                accept=".xls,.xlsx"
+                onChange={e => setFile(e.target.files[0])}
+                className="hidden"
+              />
+            </div>
+          </label>
+          
+          <button
+            type="submit"
+            disabled={isLoading || !file}
+            className="bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg font-semibold text-white disabled:bg-gray-400 transition"
+          >
+            {isLoading ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                Processing...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-cloud-upload-alt mr-2"></i>
+                Upload & Parse
+              </>
+            )}
+          </button>
+        </div>
       </form>
 
       {headers.length > 0 && (
-        <div className="mt-6">
-          <h4 className="font-semibold mb-2">Choose axes & chart type</h4>
-          <div className="flex flex-wrap gap-4 items-center">
-            <label>
-              X:
-              <select value={xCol} onChange={e => setXCol(e.target.value)}
-                className="ml-2 bg-gray-800 border border-gray-600 rounded px-2 py-1">
-                <option value="">--select--</option>
+        <div className="mb-6">
+          <h3 className="text-lg font-medium text-gray-800 mb-3">Chart Configuration</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-gray-700 mb-2">X-Axis</label>
+              <select 
+                value={xCol} 
+                onChange={e => setXCol(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Select X-Axis</option>
                 {headers.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
-            </label>
+            </div>
 
-            <label>
-              Y:
-              <select value={yCol} onChange={e => setYCol(e.target.value)}
-                className="ml-2 bg-gray-800 border border-gray-600 rounded px-2 py-1">
-                <option value="">--select--</option>
+            <div>
+              <label className="block text-gray-700 mb-2">Y-Axis</label>
+              <select 
+                value={yCol} 
+                onChange={e => setYCol(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Select Y-Axis</option>
                 {headers.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
-            </label>
+            </div>
 
-            <label>
-              Chart:
-              <select value={chartType} onChange={e => setChartType(e.target.value)}
-                className="ml-2 bg-gray-800 border border-gray-600 rounded px-2 py-1">
-                <option value="bar">Bar</option>
-                <option value="line">Line</option>
-                <option value="pie">Pie</option>
-                <option value="scatter">Scatter</option>
-                <option value="3d">3D</option>
+            <div>
+              <label className="block text-gray-700 mb-2">Chart Type</label>
+              <select 
+                value={chartType} 
+                onChange={e => setChartType(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              >
+                <option value="bar">Bar Chart</option>
+                <option value="line">Line Chart</option>
+                <option value="pie">Pie Chart</option>
+                <option value="scatter">Scatter Plot</option>
+                <option value="3d">3D Chart</option>
               </select>
-            </label>
-
-            <button
-              type="button"
-              onClick={makeChart}
-              className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg font-semibold"
-            >
-              Generate Chart
-            </button>
+            </div>
           </div>
+          
+          <button
+            onClick={makeChart}
+            disabled={!xCol || !yCol}
+            className="mt-4 bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-lg font-semibold text-white disabled:bg-gray-400 transition"
+          >
+            <i className="fas fa-chart-bar mr-2"></i>
+            Generate Chart
+          </button>
         </div>
       )}
 
       {chartData && (
         <div className="mt-6">
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg flex justify-center items-center">
-            <div style={{ width: "600px", height: "400px" }}>
+          <div className="bg-gray-50 p-4 rounded-lg mb-4">
+            <div className="h-96">
               {renderChart()}
             </div>
           </div>
 
-          <div className="flex gap-4 mt-4">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={downloadPNG}
-              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold"
+              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold text-white transition"
             >
-              Download PNG
+              <i className="fas fa-download mr-2"></i> Download PNG
             </button>
             <button
               onClick={downloadPDF}
-              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold"
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold text-white transition"
             >
-              Download PDF
+              <i className="fas fa-file-pdf mr-2"></i> Download PDF
             </button>
             <button
               onClick={generateSummary}
-              className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg font-semibold"
+              disabled={isGeneratingSummary}
+              className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg font-semibold text-white disabled:bg-purple-400 transition"
             >
-              Generate AI Summary
+              {isGeneratingSummary ? (
+                <>
+                  <i className="fas fa-spinner fa-spin mr-2"></i> Generating Summary...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-brain mr-2"></i> AI Summary
+                </>
+              )}
             </button>
           </div>
+        </div>
+      )}
 
-          {aiSummary && (
-            <div className="mt-6 bg-gray-800 p-4 rounded-lg shadow-lg">
-              <h4 className="font-semibold mb-2">🤖 AI Summary</h4>
-              <p className="text-gray-300 whitespace-pre-line">{aiSummary}</p>
-            </div>
-          )}
+      {aiSummary && (
+        <div className="mt-6 bg-green-50 p-4 rounded-lg border border-green-200">
+          <h3 className="text-lg font-semibold text-green-800 mb-2 flex items-center">
+            <i className="fas fa-brain mr-2"></i> AI Summary
+          </h3>
+          <p className="text-green-700">{aiSummary}</p>
         </div>
       )}
     </div>
