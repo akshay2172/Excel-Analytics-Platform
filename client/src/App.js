@@ -9,6 +9,8 @@ import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 import UpdateProfile from "./pages/UpdateProfile";
 
+
+
 // Create a separate component for the navigation that uses useNavigate
 function Navigation() {
   const auth = useSelector((s) => s.auth);

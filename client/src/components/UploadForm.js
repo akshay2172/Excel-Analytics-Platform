@@ -43,6 +43,8 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
   const [aiSummary, setAiSummary] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [isSavingChart, setIsSavingChart] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const auth = useSelector(s => s.auth);
 
   async function upload(e) {
@@ -138,15 +140,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
     };
 
     setChartData({ data, options });
-    
-    // Save chart data for later use
-    if (onChartSave) {
-      onChartSave({
-        xAxis: xCol,
-        yAxis: yCol,
-        chartType: chartType
-      });
-    }
+    setSaveSuccess(false); // Reset save status when a new chart is generated
   }
 
   function renderChart() {
@@ -213,6 +207,31 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
     }
   }
 
+  function saveChart() {
+    if (!chartData || !xCol || !yCol) return;
+    
+    setIsSavingChart(true);
+    
+    // Simulate API call/processing
+    setTimeout(() => {
+      if (onChartSave) {
+        onChartSave({
+          xAxis: xCol,
+          yAxis: yCol,
+          chartType: chartType,
+          chartData: chartData,
+          createdAt: new Date().toISOString()
+        });
+      }
+      
+      setIsSavingChart(false);
+      setSaveSuccess(true);
+      
+      // Reset success message after 3 seconds
+      setTimeout(() => setSaveSuccess(false), 3000);
+    }, 800);
+  }
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">Upload Excel File</h2>
@@ -240,7 +259,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
           <button
             type="submit"
             disabled={isLoading || !file}
-            className="bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg font-semibold text-white disabled:bg-gray-400 transition"
+            className="bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg font-semibold text-white disabled:bg-gray-400 transition transform hover:scale-105"
           >
             {isLoading ? (
               <>
@@ -266,7 +285,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
               <select 
                 value={xCol} 
                 onChange={e => setXCol(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
               >
                 <option value="">Select X-Axis</option>
                 {headers.map(h => <option key={h} value={h}>{h}</option>)}
@@ -278,7 +297,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
               <select 
                 value={yCol} 
                 onChange={e => setYCol(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
               >
                 <option value="">Select Y-Axis</option>
                 {headers.map(h => <option key={h} value={h}>{h}</option>)}
@@ -290,7 +309,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
               <select 
                 value={chartType} 
                 onChange={e => setChartType(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg"
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
               >
                 <option value="bar">Bar Chart</option>
                 <option value="line">Line Chart</option>
@@ -304,7 +323,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
           <button
             onClick={makeChart}
             disabled={!xCol || !yCol}
-            className="mt-4 bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-lg font-semibold text-white disabled:bg-gray-400 transition"
+            className="mt-4 bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-lg font-semibold text-white disabled:bg-gray-400 transition transform hover:scale-105"
           >
             <i className="fas fa-chart-bar mr-2"></i>
             Generate Chart
@@ -323,20 +342,39 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={downloadPNG}
-              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold text-white transition"
+              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold text-white transition transform hover:scale-105"
             >
               <i className="fas fa-download mr-2"></i> Download PNG
             </button>
             <button
               onClick={downloadPDF}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold text-white transition"
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold text-white transition transform hover:scale-105"
             >
               <i className="fas fa-file-pdf mr-2"></i> Download PDF
             </button>
             <button
+              onClick={saveChart}
+              disabled={isSavingChart || saveSuccess}
+              className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg font-semibold text-white disabled:bg-indigo-400 transition transform hover:scale-105"
+            >
+              {isSavingChart ? (
+                <>
+                  <i className="fas fa-spinner fa-spin mr-2"></i> Saving...
+                </>
+              ) : saveSuccess ? (
+                <>
+                  <i className="fas fa-check mr-2"></i> Saved!
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-save mr-2"></i> Save Chart
+                </>
+              )}
+            </button>
+            <button
               onClick={generateSummary}
               disabled={isGeneratingSummary}
-              className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg font-semibold text-white disabled:bg-purple-400 transition"
+              className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg font-semibold text-white disabled:bg-purple-400 transition transform hover:scale-105"
             >
               {isGeneratingSummary ? (
                 <>
@@ -349,6 +387,13 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
               )}
             </button>
           </div>
+
+          {saveSuccess && (
+            <div className="mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
+              <strong className="font-bold">Chart saved successfully! </strong>
+              <span className="block sm:inline">You can now view it in the "My Charts" section.</span>
+            </div>
+          )}
         </div>
       )}
 

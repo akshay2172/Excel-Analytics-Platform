@@ -47,4 +47,24 @@ router.get('/', auth, async (req, res) => {
   res.json(uploads);
 });
 
+// Delete a file by ID
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const file = await Upload.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id, // ensures users can only delete their own uploads
+    });
+
+    if (!file) {
+      return res.status(404).json({ msg: 'File not found' });
+    }
+
+    res.json({ msg: 'File deleted successfully', id: req.params.id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: err.message });
+  }
+});
+
+
 module.exports = router;
