@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../store";
@@ -11,6 +11,21 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const nav = useNavigate();
+
+  // Remove any default margin/padding from the body when component mounts
+  useEffect(() => {
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    document.documentElement.style.margin = "0";
+    document.documentElement.style.padding = "0";
+    
+    return () => {
+      document.body.style.margin = "";
+      document.body.style.padding = "";
+      document.documentElement.style.margin = "";
+      document.documentElement.style.padding = "";
+    };
+  }, []);
 
   async function submit(e) {
     e.preventDefault();
@@ -28,11 +43,120 @@ export default function Login() {
     }
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4 overflow-hidden relative">
+  // Particle animation effect
+  useEffect(() => {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    // Particle system
+    const particles = [];
+    const particleCount = 200;
+    const colors = ['#eeeeeeff', '#ffffffff', '#bcbcbcff', '#ffffffff', '#fffefeff'];
+    
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.opacity = Math.random() * 5 + 0.1;
+      }
       
-      {/* Background Excel Grid Overlay - Fixed to cover entire screen */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWZmNzlhIiBzdHJva2Utb3BhY2l0eT0iMC4xIiBkPSJNMCwwIEw0MCw0MCBNNDAsMCBMMCw0MCIgLz48L3N2Zz4=')] opacity-30"></div>
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        
+        if (this.x > canvas.width || this.x < 0) {
+          this.speedX = -this.speedX;
+        }
+        if (this.y > canvas.height || this.y < 0) {
+          this.speedY = -this.speedY;
+        }
+      }
+      
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.opacity;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    // Create particles
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+    
+    // Connect particles with lines
+    function connectParticles() {
+      const maxDistance = 100;
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a; b < particles.length; b++) {
+          const dx = particles[a].x - particles[b].x;
+          const dy = particles[a].y - particles[b].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < maxDistance) {
+            ctx.beginPath();
+            ctx.strokeStyle = '#ffffffff';
+            ctx.globalAlpha = 0.1 * (1 - distance / maxDistance);
+            ctx.lineWidth = 2;
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    
+    // Animation loop
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
+      
+      connectParticles();
+      animationFrameId = requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4 overflow-hidden">
+      
+      {/* Particle Canvas Background */}
+      <canvas 
+        id="particle-canvas" 
+        className="absolute inset-0 w-full h-full opacity-100"
+      />
+      
+      {/* Animated Grid Overlay */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWZmNzlhIiBzdHJva2Utb3BhY2l0eT0iMC4xIiBkPSJNMCwwIEw0MCw0MCBNNDAsMCBMMCw0MCIgLz48L3N2Zz4=')] opacity-0 animate-gradient-x"></div>
       
       {/* Dark overlay for better text readability */}
       <div className="absolute inset-0 bg-black/40"></div>
@@ -55,14 +179,14 @@ export default function Login() {
         </div>
 
         {/* Right Side Floating Card */}
-        <div className="bg-gray-900/90 backdrop-blur-md p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-green-600/40">
+        <div className="bg-gray-900/90 backdrop-blur-md p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-green-600/40 transform transition-all duration-300 hover:shadow-green-500/20 hover:border-green-500/60">
           <h2 className="text-3xl font-bold text-center text-green-400 mb-6">
             <i className="fas fa-sign-in-alt mr-2"></i>
             Login
           </h2>
           
           {error && (
-            <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-200 text-sm">
+            <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg text-red-200 text-sm animate-pulse">
               <i className="fas fa-exclamation-circle mr-2"></i>
               {error}
             </div>
@@ -109,7 +233,7 @@ export default function Login() {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   <i className={`far ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
@@ -125,7 +249,7 @@ export default function Login() {
                 isLoading 
                   ? "bg-gray-700 cursor-not-allowed" 
                   : "bg-green-600 hover:bg-green-700 text-white"
-              } transition shadow-lg hover:shadow-green-500/30`}
+              } transition shadow-lg hover:shadow-green-500/30 transform hover:-translate-y-0.5`}
             >
               {isLoading ? (
                 <>
@@ -144,13 +268,38 @@ export default function Login() {
           {/* Extra links */}
           <p className="text-gray-400 text-sm text-center mt-6">
             Don't have an account?{" "}
-            <Link to="/register" className="text-green-400 hover:underline font-medium">
+            <Link to="/register" className="text-green-400 hover:underline font-medium transition hover:text-green-300">
               <i className="fas fa-user-plus mr-1"></i>
               Register
             </Link>
           </p>
         </div>
       </div>
+
+      {/* Add custom styles for animations */}
+      <style>{`
+        @keyframes gradient-x {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-x {
+          background-size: 200% 200%;
+          animation: gradient-x 15s ease infinite;
+        }
+        
+        /* Ensure no default margins */
+        body, html {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+        }
+        
+        /* Ensure the root element takes full height */
+        #root {
+          height: 100vh;
+        }
+      `}</style>
     </div>
   );
 }

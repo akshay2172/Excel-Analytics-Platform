@@ -8,6 +8,7 @@ import { clearAuth } from "./store";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 import UpdateProfile from "./pages/UpdateProfile";
+import './index.css'
 
 
 
