@@ -46,7 +46,7 @@ function Navigation() {
       <nav className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-900 text-white px-6 py-4 shadow-md z-50">
         {/* Left: Logo + Title */}
         <div className="flex items-center space-x-3">
-          <img src="/excel-bg.png" alt="logo" className="w-8 h-8" />
+          <img src="/excel-bg.png" alt="logo" className="w-12 h-12" />
           <Link
             to="/"
             className="text-lg font-bold tracking-wide hover:text-teal-400"

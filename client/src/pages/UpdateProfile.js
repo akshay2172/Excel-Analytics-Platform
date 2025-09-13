@@ -162,7 +162,7 @@ export default function UpdateProfile() {
         </div>
 
         <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">© 2023 Excel Analytics Platform. All rights reserved.</p>
+          <p className="text-sm text-gray-600">© 2025 Excel Analytics Platform. All rights reserved.</p>
         </div>
       </div>
 
