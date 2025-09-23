@@ -8,6 +8,7 @@ import { clearAuth } from "./store";
 import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 import UpdateProfile from "./pages/UpdateProfile";
+import ResetPassword from "./pages/ResetPassword";
 import './index.css'
 
 
@@ -135,6 +136,7 @@ function Navigation() {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/update" element={<UpdateProfile />} />
         </Routes>
       </div>
