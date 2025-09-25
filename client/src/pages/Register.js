@@ -6,7 +6,12 @@ import { useNavigate, Link } from "react-router-dom";
 import '../index.css';
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ 
+    name: "", 
+    email: "", 
+    password: "",
+    role: "user" // Default role
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +41,7 @@ export default function Register() {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/register", form);
       dispatch(setAuth(res.data));
-      nav("/");
+      nav("/login");
     } catch (err) {
       setError(err.response?.data?.msg || err.message || "Registration failed");
     } finally {
@@ -55,7 +60,7 @@ export default function Register() {
     // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.height = document.documentElement.scrollHeight || document.body.scrollHeight;
     };
     
     resizeCanvas();
@@ -148,22 +153,22 @@ export default function Register() {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4 overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4 relative">
       
-      {/* Particle Canvas Background */}
+      {/* Particle Canvas Background - Fixed position */}
       <canvas 
         id="particle-canvas" 
-        className="absolute inset-0 w-full h-full opacity-100"
+        className="fixed inset-0 w-full h-full opacity-100 pointer-events-none"
       />
       
-      {/* Animated Grid Overlay */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWZmNzlhIiBzdHJva2Utb3BhY2l0eT0iMC4xIiBkPSJNMCwwIEw0MCw0MCBNNDAsMCBMMCw0MCIgLz48L3N2Zz4=')] opacity-0 animate-gradient-x"></div>
+      {/* Animated Grid Overlay - Fixed position */}
+      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWZmNzlhIiBzdHJva2Utb3BhY2l0eT0iMC4xIiBkPSJNMCwwIEw0MCw0MCBNNDAsMCBMMCw0MCIgLz48L3N2Zz4=')] opacity-0 animate-gradient-x pointer-events-none"></div>
       
-      {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/40"></div>
+      {/* Dark overlay for better text readability - Fixed position */}
+      <div className="fixed inset-0 bg-black/40 pointer-events-none"></div>
 
-      {/* Main container */}
-      <div className="relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-12 items-center justify-center w-full max-w-6xl">
+      {/* Main container - Relative position for scrolling */}
+      <div className="relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-12 items-center justify-center w-full max-w-6xl my-8">
         
         {/* Left Side Quote */}
         <div className="max-w-md text-center lg:text-left">
@@ -194,6 +199,46 @@ export default function Register() {
           )}
           
           <form onSubmit={submit} className="space-y-5">
+            
+            {/* Role Selection */}
+            <div>
+              <label className="block text-gray-200 mb-2 font-medium">
+                <i className="fas fa-user-tag mr-2"></i>
+                Register As
+              </label>
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, role: "user" })}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition ${
+                    form.role === "user" 
+                      ? "bg-green-600 text-white shadow-lg" 
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  <i className="fas fa-user mr-2"></i>
+                  User
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, role: "admin" })}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition ${
+                    form.role === "admin" 
+                      ? "bg-blue-600 text-white shadow-lg" 
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  <i className="fas fa-shield-alt mr-2"></i>
+                  Admin
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                {form.role === "admin" 
+                  ? "Admin accounts have full system access" 
+                  : "Standard user account for data visualization"}
+              </p>
+            </div>
+
             {/* Name */}
             <div>
               <label className="block text-gray-200 mb-2 font-medium">
@@ -249,6 +294,7 @@ export default function Register() {
                   className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 
                              text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition pr-10"
                   required
+                  minLength={6}
                   disabled={isLoading}
                 />
                 <button
@@ -269,7 +315,9 @@ export default function Register() {
               className={`w-full py-3 px-4 rounded-lg font-semibold flex items-center justify-center ${
                 isLoading 
                   ? "bg-gray-700 cursor-not-allowed" 
-                  : "bg-green-600 hover:bg-green-700 text-white"
+                  : form.role === "admin" 
+                    ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                    : "bg-green-600 hover:bg-green-700 text-white"
               } transition shadow-lg hover:shadow-green-500/30 transform hover:-translate-y-0.5`}
             >
               {isLoading ? (
@@ -280,7 +328,7 @@ export default function Register() {
               ) : (
                 <>
                   <i className="fas fa-user-plus mr-2"></i>
-                  Register
+                  Register as {form.role === "admin" ? "Admin" : "User"}
                 </>
               )}
             </button>
@@ -309,16 +357,17 @@ export default function Register() {
           animation: gradient-x 15s ease infinite;
         }
         
-        /* Ensure no default margins */
+        /* Ensure no default margins but allow scrolling */
         body, html {
           margin: 0;
           padding: 0;
-          overflow: hidden;
+          overflow-x: hidden;
+          min-height: 100vh;
         }
         
         /* Ensure the root element takes full height */
         #root {
-          height: 100vh;
+          min-height: 100vh;
         }
       `}</style>
     </div>

@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import ChangePassword from "./pages/ChangePassword";
 import UpdateProfile from "./pages/UpdateProfile";
 import ResetPassword from "./pages/ResetPassword";
+import AdminDashboard from './components/AdminDashboard';
 import './index.css'
 
 
@@ -70,6 +71,10 @@ function Navigation() {
               </Link>
             </>
           ) : (
+
+
+
+
             <div className="relative" ref={dropdownRef}>
               {/* Profile Avatar */}
               <button
@@ -89,6 +94,18 @@ function Navigation() {
               {/* Dropdown Menu */}
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden border border-gray-700 z-50">
+
+                  {auth.user?.role === 'admin' && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center px-4 py-3 hover:bg-gray-700 transition"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <i className="fas fa-shield-alt w-5 mr-3 text-yellow-400"></i>
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  )}
+
                   <Link
                     to="/profile"
                     className="flex items-center px-4 py-3 hover:bg-gray-700 transition"
@@ -113,6 +130,9 @@ function Navigation() {
                     <i className="fas fa-lock w-5 mr-3 text-teal-400"></i>
                     <span>Change Password</span>
                   </Link>
+
+
+
                   <div className="border-t border-gray-700 my-1"></div>
                   <button
                     onClick={handleLogout}
@@ -137,7 +157,9 @@ function Navigation() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          
           <Route path="/update" element={<UpdateProfile />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </div>
     </>

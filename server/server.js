@@ -6,12 +6,14 @@ const authRoutes = require('./routes/auth');
 const fileRoutes = require('./routes/file');
 const aiRoutes = require( './routes/ai');
 const userRoutes = require("./routes/user");
+const adminRoutes = require('./routes/adminRoutes');
 
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/admin' , adminRoutes);
 
 app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);

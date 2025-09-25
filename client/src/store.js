@@ -1,3 +1,4 @@
+// store.js - FIX THE MISSING EXPORT
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 
 const initialAuth = {
@@ -7,7 +8,7 @@ const initialAuth = {
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: initialAuth,
+  initialState: initialAuth, // Use the initialAuth here
   reducers: {
     setAuth(state, action) {
       state.token = action.payload.token;
@@ -21,18 +22,15 @@ const authSlice = createSlice({
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     },
-
-    updateUser(state, action) {
+    updateUser(state, action) { // This was missing
       state.user = { ...state.user, ...action.payload };
       localStorage.setItem('user', JSON.stringify(state.user));
     }
   }
 });
 
-
-
-
-export const { setAuth, clearAuth } = authSlice.actions;
+// EXPORT ALL ACTIONS
+export const { setAuth, clearAuth, updateUser } = authSlice.actions;
 
 const store = configureStore({
   reducer: {
