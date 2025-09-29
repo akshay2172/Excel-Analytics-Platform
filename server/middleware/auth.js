@@ -1,4 +1,4 @@
-// middleware/auth.js
+
 const jwt = require('jsonwebtoken');
 
 module.exports = function (req, res, next) {
@@ -10,8 +10,8 @@ module.exports = function (req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // Attach decoded payload to req.user
-    req.user = decoded; // decoded has { id, email, role } because you signed it that way
+
+    req.user = decoded; 
     next();
   } catch (err) {
     res.status(401).json({ msg: 'Token is not valid' });

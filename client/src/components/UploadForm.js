@@ -6,7 +6,7 @@ import ThreeDChart from './ThreeDChart';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-// Chart.js registration
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -74,7 +74,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
   function makeChart() {
     if (!xCol || !yCol) return alert('Select columns');
 
-    // Prepare data based on chart type
+    
     let data;
     if (chartType === 'scatter') {
       data = {
@@ -121,7 +121,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
       };
     }
 
-    // Set options based on chart type
+    
     const options = {
       responsive: true,
       plugins: {
@@ -140,7 +140,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
     };
 
     setChartData({ data, options });
-    setSaveSuccess(false); // Reset save status when a new chart is generated
+    setSaveSuccess(false); 
   }
 
   function renderChart() {
@@ -179,7 +179,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
     
     setIsGeneratingSummary(true);
     try {
-      // Prepare data for AI summarization
+      
       const textData = parsedRows.slice(0, 20).map(row => 
         Object.entries(row).map(([key, value]) => `${key}: ${value}`).join(', ')
       ).join('; ');
@@ -192,7 +192,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
       
       setAiSummary(res.data.summary);
       
-      // Save to AI insights
+      
       if (onInsightSave) {
         onInsightSave({
           summary: res.data.summary
@@ -212,7 +212,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
     
     setIsSavingChart(true);
     
-    // Simulate API call/processing
+   
     setTimeout(() => {
       if (onChartSave) {
         onChartSave({
@@ -227,7 +227,7 @@ export default function UploadForm({ onUploaded, onChartSave, onInsightSave }) {
       setIsSavingChart(false);
       setSaveSuccess(true);
       
-      // Reset success message after 3 seconds
+      
       setTimeout(() => setSaveSuccess(false), 3000);
     }, 800);
   }

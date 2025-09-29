@@ -14,7 +14,6 @@ import './index.css'
 
 
 
-// Create a separate component for the navigation that uses useNavigate
 function Navigation() {
   const auth = useSelector((s) => s.auth);
   const dispatch = useDispatch();
@@ -22,7 +21,7 @@ function Navigation() {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close dropdown when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -39,14 +38,14 @@ function Navigation() {
   const handleLogout = () => {
     dispatch(clearAuth());
     setDropdownOpen(false);
-    navigate("/login"); // Redirect to login page
+    navigate("/login");
   };
 
   return (
     <>
-      {/* Navbar */}
+
       <nav className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-900 text-white px-6 py-4 shadow-md z-50">
-        {/* Left: Logo + Title */}
+
         <div className="flex items-center space-x-3">
           <img src="/excel-bg.png" alt="logo" className="w-12 h-12" />
           <Link
@@ -57,7 +56,7 @@ function Navigation() {
           </Link>
         </div>
 
-        {/* Right: Links or Profile */}
+
         <div className="flex items-center space-x-6">
           {!auth.token ? (
             <>
@@ -76,7 +75,7 @@ function Navigation() {
 
 
             <div className="relative" ref={dropdownRef}>
-              {/* Profile Avatar */}
+
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-full hover:bg-gray-700 transition"
@@ -91,7 +90,7 @@ function Navigation() {
                 </span>
               </button>
 
-              {/* Dropdown Menu */}
+
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden border border-gray-700 z-50">
 
@@ -148,7 +147,7 @@ function Navigation() {
         </div>
       </nav>
 
-      {/* Page Content - Remove margin/padding to fix background */}
+
       <div className="pt-20 min-h-screen bg-gray-950">
         <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -157,7 +156,7 @@ function Navigation() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
-          
+
           <Route path="/update" element={<UpdateProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>

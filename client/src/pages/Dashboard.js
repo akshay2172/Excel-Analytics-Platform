@@ -6,7 +6,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 import "../index.css";
 
-// Register ChartJS components
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement, ArcElement);
 
 export default function Dashboard() {
@@ -23,15 +23,15 @@ export default function Dashboard() {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (!auth.token) return;
-    
+
     setIsLoading(true);
-    // Fetch user uploads
+
     fetchUploads();
-    
-    // Fetch charts and insights from localStorage
+
+
     const savedCharts = JSON.parse(localStorage.getItem('userCharts') || '[]');
     const savedInsights = JSON.parse(localStorage.getItem('userInsights') || '[]');
-    
+
     setCharts(savedCharts);
     setAiInsights(savedInsights);
     setIsLoading(false);
@@ -67,7 +67,7 @@ export default function Dashboard() {
       })
       .then(() => {
         setUploads(uploads.filter(file => file._id !== fileId));
-        // If the deleted file was selected, clear the selection
+
         if (selectedFile && selectedFile._id === fileId) {
           setSelectedFile(null);
         }
@@ -82,7 +82,7 @@ export default function Dashboard() {
     const updatedCharts = charts.filter(chart => chart.id !== chartId);
     setCharts(updatedCharts);
     localStorage.setItem('userCharts', JSON.stringify(updatedCharts));
-    
+
     if (selectedChart && selectedChart.id === chartId) {
       setSelectedChart(null);
     }
@@ -92,7 +92,7 @@ export default function Dashboard() {
     const updatedInsights = aiInsights.filter(insight => insight.id !== insightId);
     setAiInsights(updatedInsights);
     localStorage.setItem('userInsights', JSON.stringify(updatedInsights));
-    
+
     if (selectedInsight && selectedInsight.id === insightId) {
       setSelectedInsight(null);
     }
@@ -122,7 +122,7 @@ export default function Dashboard() {
       summary: insightData.summary,
       createdAt: new Date().toISOString()
     };
-    
+
     const updatedInsights = [...aiInsights, newInsight];
     setAiInsights(updatedInsights);
     localStorage.setItem('userInsights', JSON.stringify(updatedInsights));
@@ -140,7 +140,7 @@ export default function Dashboard() {
     setSelectedChart(null);
   };
 
-  // Function to render the appropriate chart based on type
+
   const renderChart = (chartData) => {
     if (!chartData) return <div>No chart data available</div>;
 
@@ -188,7 +188,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex bg-white">
-      {/* Sidebar Navigation - Fixed position */}
+
       <div className="w-64 bg-gradient-to-b from-gray-900 to-black text-white shadow-xl fixed h-full overflow-y-auto">
         <div className="p-5 border-b border-gray-700">
           <h2 className="text-xl font-bold flex items-center">
@@ -196,7 +196,7 @@ export default function Dashboard() {
             Excel Analytics
           </h2>
         </div>
-        
+
         <nav className="p-4 space-y-2">
           <button
             onClick={() => {
@@ -205,11 +205,10 @@ export default function Dashboard() {
               setSelectedChart(null);
               setSelectedInsight(null);
             }}
-            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${
-              activeTab === 'dashboard' 
-                ? 'bg-green-700 text-white font-medium shadow-lg' 
+            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${activeTab === 'dashboard'
+                ? 'bg-green-700 text-white font-medium shadow-lg'
                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-            }`}
+              }`}
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
             <i className="fas fa-tachometer-alt mr-3 text-lg"></i>
@@ -218,7 +217,7 @@ export default function Dashboard() {
               <div className="ml-auto w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             )}
           </button>
-          
+
           <button
             onClick={() => {
               setActiveTab('files');
@@ -226,11 +225,10 @@ export default function Dashboard() {
               setSelectedChart(null);
               setSelectedInsight(null);
             }}
-            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${
-              activeTab === 'files' 
-                ? 'bg-green-700 text-white font-medium shadow-lg' 
+            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${activeTab === 'files'
+                ? 'bg-green-700 text-white font-medium shadow-lg'
                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-            }`}
+              }`}
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
             <i className="fas fa-file-excel mr-3 text-lg"></i>
@@ -241,7 +239,7 @@ export default function Dashboard() {
               </span>
             )}
           </button>
-          
+
           <button
             onClick={() => {
               setActiveTab('charts');
@@ -249,11 +247,10 @@ export default function Dashboard() {
               setSelectedChart(null);
               setSelectedInsight(null);
             }}
-            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${
-              activeTab === 'charts' 
-                ? 'bg-green-700 text-white font-medium shadow-lg' 
+            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${activeTab === 'charts'
+                ? 'bg-green-700 text-white font-medium shadow-lg'
                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-            }`}
+              }`}
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
             <i className="fas fa-chart-bar mr-3 text-lg"></i>
@@ -264,7 +261,7 @@ export default function Dashboard() {
               </span>
             )}
           </button>
-          
+
           <button
             onClick={() => {
               setActiveTab('insights');
@@ -272,11 +269,10 @@ export default function Dashboard() {
               setSelectedChart(null);
               setSelectedInsight(null);
             }}
-            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${
-              activeTab === 'insights' 
-                ? 'bg-green-700 text-white font-medium shadow-lg' 
+            className={`w-full flex items-center p-4 rounded-lg transition-all duration-300 group relative overflow-hidden ${activeTab === 'insights'
+                ? 'bg-green-700 text-white font-medium shadow-lg'
                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-            }`}
+              }`}
           >
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
             <i className="fas fa-brain mr-3 text-lg"></i>
@@ -288,8 +284,8 @@ export default function Dashboard() {
             )}
           </button>
         </nav>
-        
-        {/* Fixed user info at bottom */}
+
+
         <div className="absolute bottom-0 w-full p-4 border-t border-gray-700 bg-gray-900">
           <div className="flex items-center">
             <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-teal-400 rounded-full flex items-center justify-center mr-3 text-white shadow-md">
@@ -303,12 +299,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Main Content - With left margin for sidebar */}
+
       <div className="flex-1 ml-64 p-6 overflow-auto">
-        {/* Dashboard Tab */}
+
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            {/* Welcome Header */}
+
             <header className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
               <h1 className="text-3xl font-bold text-gray-800 flex items-center">
                 <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white p-2 rounded-lg mr-3">
@@ -318,7 +314,7 @@ export default function Dashboard() {
               </h1>
               {auth.user ? (
                 <p className="mt-2 text-gray-600">
-                  Welcome back, <span className="font-semibold text-green-600">{auth.user.name || auth.user.email}</span>. 
+                  Welcome back, <span className="font-semibold text-green-600">{auth.user.name || auth.user.email}</span>.
                   Here's what's happening with your data.
                 </p>
               ) : (
@@ -326,7 +322,7 @@ export default function Dashboard() {
               )}
             </header>
 
-            {/* Stats Overview */}
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div className="bg-white p-5 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center">
@@ -345,7 +341,7 @@ export default function Dashboard() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="bg-white p-5 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-lg flex items-center justify-center mr-4 text-white shadow-md">
@@ -363,7 +359,7 @@ export default function Dashboard() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="bg-white p-5 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg flex items-center justify-center mr-4 text-white shadow-md">
@@ -383,7 +379,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Upload Section - Below the stats */}
+
             {auth.token && (
               <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                 <div className="mb-4">
@@ -393,8 +389,8 @@ export default function Dashboard() {
                   </h2>
                   <p className="text-gray-600">Process your data and create visualizations</p>
                 </div>
-                <UploadForm 
-                  onUploaded={refreshUploads} 
+                <UploadForm
+                  onUploaded={refreshUploads}
                   onChartSave={saveChart}
                   onInsightSave={saveInsight}
                 />
@@ -403,7 +399,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Files Tab */}
+
         {activeTab === 'files' && (
           <div>
             <header className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
@@ -428,18 +424,17 @@ export default function Dashboard() {
                 {uploads.map((u) => (
                   <div
                     key={u._id}
-                    className={`bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group ${
-                      selectedFile && selectedFile._id === u._id ? 'ring-2 ring-green-400 scale-[1.02]' : ''
-                    }`}
+                    className={`bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group ${selectedFile && selectedFile._id === u._id ? 'ring-2 ring-green-400 scale-[1.02]' : ''
+                      }`}
                   >
-                    {/* Shine effect on hover */}
+
                     <div className="absolute inset-0 -left-full group-hover:left-100 transition-all duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                    
+
                     <div className="flex items-start justify-between mb-4 relative z-10">
                       <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-400 rounded-lg flex items-center justify-center mr-4 text-white shadow-md">
                         <i className="fas fa-file-excel"></i>
                       </div>
-                      <button 
+                      <button
                         className="text-gray-400 hover:text-red-500 transition transform hover:scale-110"
                         onClick={() => deleteFile(u._id)}
                         title="Delete file"
@@ -453,7 +448,7 @@ export default function Dashboard() {
                       Uploaded: {new Date(u.createdAt).toLocaleString()}
                     </p>
                     <div className="flex mt-4 space-x-2 relative z-10">
-                      <button 
+                      <button
                         className="text-sm bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-2 rounded-lg hover:from-green-600 hover:to-teal-600 transition shadow-md flex items-center"
                         onClick={() => handleFileSelect(u)}
                       >
@@ -470,7 +465,7 @@ export default function Dashboard() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700">No files uploaded yet</h3>
                 <p className="text-gray-500 mt-2 mb-4">Upload your first Excel file to get started with data analysis</p>
-                <button 
+                <button
                   onClick={() => setActiveTab('dashboard')}
                   className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-teal-600 transition flex items-center mx-auto shadow-md"
                 >
@@ -482,7 +477,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Charts Tab */}
+
         {activeTab === 'charts' && (
           <div>
             <header className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
@@ -500,18 +495,17 @@ export default function Dashboard() {
                 {charts.map((chart) => (
                   <div
                     key={chart.id}
-                    className={`bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group ${
-                      selectedChart && selectedChart.id === chart.id ? 'ring-2 ring-blue-400 scale-[1.02]' : ''
-                    }`}
+                    className={`bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group ${selectedChart && selectedChart.id === chart.id ? 'ring-2 ring-blue-400 scale-[1.02]' : ''
+                      }`}
                   >
-                    {/* Shine effect on hover */}
+
                     <div className="absolute inset-0 -left-full group-hover:left-100 transition-all duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                    
+
                     <div className="flex items-start justify-between mb-4 relative z-10">
                       <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-indigo-400 rounded-lg flex items-center justify-center mr-4 text-white shadow-md">
                         <i className="fas fa-chart-bar"></i>
                       </div>
-                      <button 
+                      <button
                         className="text-gray-400 hover:text-red-500 transition transform hover:scale-110"
                         onClick={() => deleteChart(chart.id)}
                         title="Delete chart"
@@ -525,7 +519,7 @@ export default function Dashboard() {
                       Created: {new Date(chart.createdAt).toLocaleDateString()}
                     </p>
                     <div className="flex mt-4 space-x-2 relative z-10">
-                      <button 
+                      <button
                         className="text-sm bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-3 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition shadow-md flex items-center"
                         onClick={() => viewChart(chart)}
                       >
@@ -547,7 +541,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* AI Insights Tab */}
+
         {activeTab === 'insights' && (
           <div>
             <header className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
@@ -565,18 +559,17 @@ export default function Dashboard() {
                 {aiInsights.map((insight) => (
                   <div
                     key={insight.id}
-                    className={`bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group ${
-                      selectedInsight && selectedInsight.id === insight.id ? 'ring-2 ring-purple-400 scale-[1.02]' : ''
-                    }`}
+                    className={`bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden group ${selectedInsight && selectedInsight.id === insight.id ? 'ring-2 ring-purple-400 scale-[1.02]' : ''
+                      }`}
                   >
-                    {/* Shine effect on hover */}
+
                     <div className="absolute inset-0 -left-full group-hover:left-100 transition-all duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
-                    
+
                     <div className="flex items-start justify-between mb-4 relative z-10">
                       <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg flex items-center justify-center mr-4 text-white shadow-md">
                         <i className="fas fa-brain"></i>
                       </div>
-                      <button 
+                      <button
                         className="text-gray-400 hover:text-red-500 transition transform hover:scale-110"
                         onClick={() => deleteInsight(insight.id)}
                         title="Delete insight"
@@ -590,7 +583,7 @@ export default function Dashboard() {
                       Created: {new Date(insight.createdAt).toLocaleDateString()}
                     </p>
                     <div className="flex mt-4 space-x-2 relative z-10">
-                      <button 
+                      <button
                         className="text-sm bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition shadow-md flex items-center"
                         onClick={() => viewInsight(insight)}
                       >
@@ -612,7 +605,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Detail View Section */}
+
         {(selectedFile || selectedChart || selectedInsight) && (
           <div className="mt-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -641,7 +634,7 @@ export default function Dashboard() {
                 </>
               )}
             </h2>
-            
+
             {selectedFile && (
               <div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -654,7 +647,7 @@ export default function Dashboard() {
                     <p className="text-lg font-semibold text-gray-800">{new Date(selectedFile.createdAt).toLocaleString()}</p>
                   </div>
                 </div>
-                
+
                 {selectedFile.parsed && selectedFile.parsed.length > 0 && (
                   <div className="mt-4">
                     <h3 className="text-lg font-medium text-gray-800 mb-2 flex items-center">
@@ -694,7 +687,7 @@ export default function Dashboard() {
                 )}
               </div>
             )}
-            
+
             {selectedChart && (
               <div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -707,7 +700,7 @@ export default function Dashboard() {
                     <p className="text-lg font-semibold text-blue-800">{new Date(selectedChart.createdAt).toLocaleString()}</p>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                   <div className="h-96">
                     {renderChart(selectedChart)}
@@ -715,14 +708,14 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            
+
             {selectedInsight && (
               <div>
                 <div className="mb-4 bg-purple-50 p-3 rounded-lg">
-                    <p className="text-sm text-purple-500">Created</p>
-                    <p className="text-lg font-semibold text-purple-800">{new Date(selectedInsight.createdAt).toLocaleString()}</p>
+                  <p className="text-sm text-purple-500">Created</p>
+                  <p className="text-lg font-semibold text-purple-800">{new Date(selectedInsight.createdAt).toLocaleString()}</p>
                 </div>
-                
+
                 <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-100">
                   <h3 className="text-lg font-semibold text-purple-800 mb-2 flex items-center">
                     <i className="fas fa-lightbulb mr-2 text-yellow-500"></i>
@@ -732,7 +725,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            
+
             <button
               onClick={() => {
                 setSelectedFile(null);

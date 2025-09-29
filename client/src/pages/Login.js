@@ -8,7 +8,7 @@ export default function Login() {
   const [form, setForm] = useState({ 
     email: "", 
     password: "",
-    role: "user" // Default role
+    role: "user" 
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,7 +27,7 @@ export default function Login() {
   const dispatch = useDispatch();
   const nav = useNavigate();
 
-  // Remove any default margin/padding from the body when component mounts
+  
   useEffect(() => {
     document.body.style.margin = "0";
     document.body.style.padding = "0";
@@ -55,8 +55,8 @@ export default function Login() {
         password: form.password,
         role: form.role
       });
-      
       dispatch(setAuth(res.data));
+      
       
       if (res.data.user.role === 'admin') {
         nav("/admin");
@@ -70,7 +70,7 @@ export default function Login() {
     }
   }
 
-  // Forgot Password Handler
+  
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setIsForgotPasswordLoading(true);
@@ -83,7 +83,7 @@ export default function Login() {
       });
       
       setForgotPasswordMessage(res.data.msg || "OTP sent to your email");
-      setResetStep(2); // Move to OTP verification step
+      setResetStep(2);
     } catch (err) {
       setForgotPasswordError(err.response?.data?.msg || err.message || "Failed to send OTP");
     } finally {
@@ -91,7 +91,7 @@ export default function Login() {
     }
   };
 
-  // Verify OTP Handler
+
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
       setForgotPasswordError("Please enter a valid 6-digit OTP");
@@ -117,7 +117,7 @@ export default function Login() {
     }
   };
 
-  // Resend OTP Handler
+
   const handleResendOtp = async () => {
     setIsForgotPasswordLoading(true);
     setForgotPasswordError("");
@@ -137,7 +137,7 @@ export default function Login() {
     }
   };
 
-  // Reset Password Handler
+  
   const handleResetPassword = async (e) => {
     e.preventDefault();
     
@@ -163,12 +163,12 @@ export default function Login() {
       const res = await axios.post("http://localhost:5000/api/auth/reset-password", {
         email: forgotPasswordEmail,
         otp: otp,
-        newPassword: newPassword
+        password: newPassword
       });
       
       setForgotPasswordMessage("Password reset successfully! You can now login with your new password.");
       
-      // Reset form and go back to login
+      
       setTimeout(() => {
         setShowForgotPassword(false);
         setResetStep(1);
@@ -186,7 +186,6 @@ export default function Login() {
     }
   };
 
-  // Particle animation effect - updated to handle scroll
   useEffect(() => {
     const canvas = document.getElementById('particle-canvas');
     if (!canvas) return;
@@ -195,7 +194,7 @@ export default function Login() {
     let animationFrameId;
     
     const resizeCanvas = () => {
-      // Set canvas to full document height, not just viewport
+     
       canvas.width = window.innerWidth;
       canvas.height = Math.max(
         document.documentElement.scrollHeight,
@@ -206,10 +205,10 @@ export default function Login() {
     
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('scroll', resizeCanvas); // Update on scroll
+    window.addEventListener('scroll', resizeCanvas); 
     
     const particles = [];
-    const particleCount = 150; // Reduced for better performance on mobile
+    const particleCount = 150; 
     const colors = ['#eeeeeeff', '#ffffffff', '#bcbcbcff', '#ffffffff', '#fffefeff'];
     
     class Particle {
@@ -291,27 +290,27 @@ export default function Login() {
   }, []);
 
   return (
-    // Changed from fixed to relative min-h-screen for scrollable page
+    
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4">
       
-      {/* Particle Canvas Background - made fixed but covers full document */}
+      
       <canvas 
         id="particle-canvas" 
         className="fixed inset-0 w-full h-full opacity-100 pointer-events-none"
         style={{ height: '100%' }}
       />
       
-      {/* Animated Grid Overlay */}
+     
       <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZmlsbD0ibm9uZSIxc3Ryb2tlPSIjMWZmNzlhIiBzdHJva2Utb3BhY2l0eT0iMC4xIiBkPSJNMCwwIEw0MCw0MCBNNDAsMCBMMCw0MCIgLz48L3N2Zz4=')] opacity-0 animate-gradient-x pointer-events-none"></div>
       
-      {/* Dark overlay for better text readability */}
+      
       <div className="fixed inset-0 bg-black/40 pointer-events-none"></div>
 
-      {/* Main container - now scrollable */}
+     
       <div className="relative z-10 w-full py-8">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center justify-center w-full max-w-6xl mx-auto">
           
-          {/* Left Side Quote */}
+         
           <div className="max-w-md text-center lg:text-left">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6">
               Excel Analytics Platform
@@ -325,9 +324,9 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Right Side Floating Card */}
+       
           <div className="bg-gray-900/90 backdrop-blur-md p-6 md:p-8 lg:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-green-600/40 transform transition-all duration-300 hover:shadow-green-500/20 hover:border-green-500/60">
-            {/* Rest of your form content remains exactly the same */}
+            
             {!showForgotPassword ? (
               <>
                 <h2 className="text-2xl md:text-3xl font-bold text-center text-green-400 mb-6">
@@ -470,7 +469,7 @@ export default function Login() {
                   </button>
                 </form>
 
-                {/* Extra links */}
+               
                 <p className="text-gray-400 text-sm text-center mt-6">
                   Don't have an account?{" "}
                   <Link to="/register" className="text-green-400 hover:underline font-medium transition hover:text-green-300">
@@ -480,7 +479,7 @@ export default function Login() {
                 </p>
               </>
             ) : (
-              /* Forgot Password Form - keep this section exactly as is */
+           
               <>
                 <h2 className="text-3xl font-bold text-center text-green-400 mb-6">
                   <i className="fas fa-key mr-2"></i>
@@ -692,7 +691,7 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Updated custom styles */}
+    
       <style>{`
         @keyframes gradient-x {
           0% { background-position: 0% 50%; }

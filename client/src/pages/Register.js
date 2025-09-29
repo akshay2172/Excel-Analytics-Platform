@@ -10,7 +10,7 @@ export default function Register() {
     name: "", 
     email: "", 
     password: "",
-    role: "user" // Default role
+    role: "user" 
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -18,7 +18,7 @@ export default function Register() {
   const dispatch = useDispatch();
   const nav = useNavigate();
 
-  // Remove any default margin/padding from the body when component mounts
+
   useEffect(() => {
     document.body.style.margin = "0";
     document.body.style.padding = "0";
@@ -49,7 +49,7 @@ export default function Register() {
     }
   }
 
-  // Particle animation effect
+
   useEffect(() => {
     const canvas = document.getElementById('particle-canvas');
     if (!canvas) return;
@@ -57,7 +57,7 @@ export default function Register() {
     const ctx = canvas.getContext('2d');
     let animationFrameId;
     
-    // Set canvas size
+   
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = document.documentElement.scrollHeight || document.body.scrollHeight;
@@ -66,7 +66,7 @@ export default function Register() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
     
-    // Particle system
+ 
     const particles = [];
     const particleCount = 200;
     const colors = ['#ffffffff', '#c4d6d0ff', '#d7d7d7ff', '#e2e2e2ff', '#e6e7e6ff']; // Green shades
@@ -103,12 +103,12 @@ export default function Register() {
       }
     }
     
-    // Create particles
+  
     for (let i = 0; i < particleCount; i++) {
       particles.push(new Particle());
     }
     
-    // Connect particles with lines
+
     function connectParticles() {
       const maxDistance = 100;
       for (let a = 0; a < particles.length; a++) {
@@ -130,7 +130,7 @@ export default function Register() {
       }
     }
     
-    // Animation loop
+
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -145,7 +145,7 @@ export default function Register() {
     
     animate();
     
-    // Cleanup
+
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
@@ -155,22 +155,22 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4 relative">
       
-      {/* Particle Canvas Background - Fixed position */}
+      
       <canvas 
         id="particle-canvas" 
         className="fixed inset-0 w-full h-full opacity-100 pointer-events-none"
       />
       
-      {/* Animated Grid Overlay - Fixed position */}
+     
       <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWZmNzlhIiBzdHJva2Utb3BhY2l0eT0iMC4xIiBkPSJNMCwwIEw0MCw0MCBNNDAsMCBMMCw0MCIgLz48L3N2Zz4=')] opacity-0 animate-gradient-x pointer-events-none"></div>
       
-      {/* Dark overlay for better text readability - Fixed position */}
+     
       <div className="fixed inset-0 bg-black/40 pointer-events-none"></div>
 
-      {/* Main container - Relative position for scrolling */}
+      
       <div className="relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-12 items-center justify-center w-full max-w-6xl my-8">
         
-        {/* Left Side Quote */}
+        
         <div className="max-w-md text-center lg:text-left">
           <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-6">
             Excel Analytics Platform
@@ -184,7 +184,7 @@ export default function Register() {
           </p>
         </div>
 
-        {/* Right Side Floating Card */}
+       
         <div className="bg-gray-900/90 backdrop-blur-md p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-green-600/40 transform transition-all duration-300 hover:shadow-green-500/20 hover:border-green-500/60">
           <h2 className="text-3xl font-bold text-center text-green-400 mb-6">
             <i className="fas fa-user-plus mr-2"></i>
@@ -334,7 +334,7 @@ export default function Register() {
             </button>
           </form>
 
-          {/* Extra link */}
+        
           <p className="text-gray-400 text-sm text-center mt-6">
             Already have an account?{" "}
             <Link to="/login" className="text-green-400 hover:underline font-medium transition hover:text-green-300">
@@ -345,7 +345,7 @@ export default function Register() {
         </div>
       </div>
 
-      {/* Add custom styles for animations */}
+      
       <style>{`
         @keyframes gradient-x {
           0% { background-position: 0% 50%; }

@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-// Update profile (name or email)
+
 router.put('/update', auth, async (req, res) => {
   try {
     const { name, email } = req.body;
@@ -25,7 +25,7 @@ router.put('/update', auth, async (req, res) => {
   }
 });
 
-// Change password
+
 router.put('/change-password', auth, async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;

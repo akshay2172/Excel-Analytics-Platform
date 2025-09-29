@@ -29,7 +29,7 @@ export default function ResetPassword() {
       });
       
       setMessage(res.data.msg);
-      setStep(2); // Move to OTP entry step
+      setStep(2); 
     } catch (err) {
       setError(err.response?.data?.msg || err.message || "Failed to send OTP");
     } finally {

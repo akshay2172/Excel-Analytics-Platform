@@ -31,7 +31,7 @@ router.post("/summarize", async (req, res) => {
   }
 });
 
-// Save AI insight
+
 router.post("/insight", auth, async (req, res) => {
   try {
     const { uploadId, summary, chartType, xAxis, yAxis } = req.body;
@@ -53,7 +53,7 @@ router.post("/insight", auth, async (req, res) => {
   }
 });
 
-// Get user's AI insights
+
 router.get("/insights", auth, async (req, res) => {
   try {
     const insights = await Analysis.find({ user: req.user.id })

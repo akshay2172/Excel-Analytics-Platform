@@ -18,14 +18,14 @@ export default function AdminDashboard() {
   const auth = useSelector(state => state.auth);
   const navigate = useNavigate();
 
-  // Check if user is admin
+ 
   useEffect(() => {
     if (!auth.user || auth.user.role !== 'admin') {
       navigate('/');
     }
   }, [auth, navigate]);
 
-  // Fetch data
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header */}
+     
       <header className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Navigation Tabs */}
+      
       <nav className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
         </div>
       </nav>
 
-      {/* Main Content */}
+   
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
           <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg">
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
         {activeTab === 'system' && <SystemInfo stats={stats} />}
       </main>
 
-      {/* Delete Confirmation Modal */}
+     
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
   );
 }
 
-// Helper function for tab icons
+
 function getTabIcon(tab) {
   const icons = {
     dashboard: 'tachometer-alt',
@@ -248,7 +248,7 @@ function getTabIcon(tab) {
   return icons[tab] || 'circle';
 }
 
-// Dashboard Stats Component
+
 function DashboardStats({ stats }) {
   const statCards = [
     {
@@ -299,7 +299,7 @@ function DashboardStats({ stats }) {
   );
 }
 
-// Users Management Component
+
 function UsersManagement({ 
   users, 
   searchTerm, 
@@ -431,8 +431,7 @@ function UsersManagement({
   );
 }
 
-// System Info Component
-// System Info Component
+
 function SystemInfo({ stats }) {
   const formatBytes = (bytes) => {
     if (!bytes) return '0 Bytes';
@@ -442,10 +441,10 @@ function SystemInfo({ stats }) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Remove process.uptime() and use data from stats instead
+ 
   const serverUptime = stats.systemStats?.serverUptime || 0;
   
-  // Format uptime from seconds to hours
+ 
   const formatUptime = (seconds) => {
     if (!seconds) return '0 hours';
     const hours = Math.floor(seconds / 3600);

@@ -13,7 +13,7 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
 
-  // Scroll to top on component mount to ensure no unwanted spacing
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -31,7 +31,7 @@ export default function Profile() {
         { headers: { Authorization: `Bearer ${auth.token}` } }
       );
 
-      // Update redux with new user info
+  
       dispatch(setAuth({ token: auth.token, user: res.data.user }));
       setMessage({ text: "Profile updated successfully!", type: "success" });
     } catch (err) {
@@ -51,20 +51,20 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Enhanced gradient background */}
+      
       <div className="absolute inset-0 bg-black z-0"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-black via-green-900/10 to-green-900/30 z-0"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-900/10 via-black to-black z-0"></div>
       
-      {/* Subtle animated elements */}
+     
       <div className="absolute top-1/4 -left-20 w-72 h-72 bg-green-700 rounded-full mix-blend-soft-light filter blur-xl opacity-10 animate-blob"></div>
       <div className="absolute top-1/3 -right-20 w-72 h-72 bg-green-600 rounded-full mix-blend-soft-light filter blur-xl opacity-10 animate-blob animation-delay-2000"></div>
       <div className="absolute bottom-1/4 left-1/2 w-72 h-72 bg-green-800 rounded-full mix-blend-soft-light filter blur-xl opacity-10 animate-blob animation-delay-4000"></div>
       
       <div className="max-w-md mx-auto relative z-10 py-8">
-        {/* Profile card with glowing border */}
+        
         <div className="bg-gray-900/80 backdrop-blur-md p-8 rounded-2xl border border-green-500/30 relative overflow-hidden">
-          {/* Glowing border effect */}
+          
           <div className="absolute -inset-2 bg-gradient-to-r from-green-600/10 to-green-400/10 rounded-2xl blur-md opacity-70"></div>
           <div className="absolute inset-0 border border-green-500/20 rounded-2xl"></div>
           
@@ -134,7 +134,7 @@ export default function Profile() {
                     : "bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white"
                 } transition-all shadow-lg hover:shadow-green-700/30`}
               >
-                {/* Button shine effect */}
+               
                 <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity duration-300"></span>
                 {isLoading ? (
                   <>
@@ -171,7 +171,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Add custom styles for animations */}
+      
       <style jsx>{`
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1); }

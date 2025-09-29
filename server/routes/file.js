@@ -10,7 +10,7 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
-// Upload and parse Excel
+
 router.post('/upload', auth, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ msg: 'No file' });
@@ -18,15 +18,15 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
     const buffer = req.file.buffer;
     const workbook = XLSX.read(buffer, { type: 'buffer' });
 
-    // Parse first sheet
+
     const sheetName = workbook.SheetNames[0];
     const ws = workbook.Sheets[sheetName];
     const json = XLSX.utils.sheet_to_json(ws, { defval: null });
 
-    // Collect headers (columns) from sheet
+
     const headers = json.length ? Object.keys(json[0]) : [];
 
-    // Save in DB
+
     const saved = new Upload({
       user: req.user.id,
       filename: req.file.originalname,
@@ -41,18 +41,18 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
   }
 });
 
-// Get user's uploads
+
 router.get('/', auth, async (req, res) => {
   const uploads = await Upload.find({ user: req.user.id }).sort({ createdAt: -1 });
   res.json(uploads);
 });
 
-// Delete a file by ID
+
 router.delete('/:id', auth, async (req, res) => {
   try {
     const file = await Upload.findOneAndDelete({
       _id: req.params.id,
-      user: req.user.id, // ensures users can only delete their own uploads
+      user: req.user.id,
     });
 
     if (!file) {

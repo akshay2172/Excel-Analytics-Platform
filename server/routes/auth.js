@@ -5,30 +5,26 @@ const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const router = express.Router();
 
-// ---------------- REGISTER ----------------
+
 router.post('/register', async (req, res) => {
   try {
-    console.log('=== REGISTRATION DEBUG START ===');
-    console.log('Request body:', JSON.stringify(req.body, null, 2));
-
     let { name, email, password, role } = req.body;
 
-    // Normalize and validate role
+
     let normalizedRole = 'user';
     if (role && ['user', 'admin'].includes(role.toLowerCase().trim())) {
       normalizedRole = role.toLowerCase().trim();
     }
-    console.log('Normalized role:', normalizedRole);
 
-    // Check if user already exists
+
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ msg: 'User exists' });
 
-    // Hash password
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
+
     const user = new User({
       name,
       email,
@@ -36,13 +32,9 @@ router.post('/register', async (req, res) => {
       role: normalizedRole
     });
 
-    console.log('User model before save:', user);
-
     await user.save();
 
-    console.log('User after save:', user);
 
-    // Create JWT
     const payload = {
       id: user._id,
       email: user.email,
@@ -60,19 +52,15 @@ router.post('/register', async (req, res) => {
         role: user.role
       }
     });
-
-    console.log('=== REGISTRATION DEBUG END ===');
   } catch (err) {
-    console.error('Registration error:', err);
     res.status(500).json({ msg: err.message });
   }
 });
 
 
-// ---------------- LOGIN ----------------
 router.post('/login', async (req, res) => {
   try {
-    const { email, password, role } = req.body; // Add role to destructuring
+    const { email, password, role } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
@@ -81,8 +69,8 @@ router.post('/login', async (req, res) => {
 
     // Add role validation
     if (role && user.role !== role) {
-      return res.status(403).json({ 
-        msg: `Access denied: You are not a ${role}. Your actual role is ${user.role}.` 
+      return res.status(403).json({
+        msg: `Access denied: You are not a ${role}. Your actual role is ${user.role}.`
       });
     }
 
@@ -94,12 +82,11 @@ router.post('/login', async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ msg: err.message });
   }
 });
 
-// ---------------- FORGOT PASSWORD ----------------
+
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
@@ -145,12 +132,11 @@ router.post('/forgot-password', async (req, res) => {
       email
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ msg: 'Server error' });
   }
 });
 
-// ---------------- VERIFY OTP ----------------
+
 router.post('/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -165,12 +151,11 @@ router.post('/verify-otp', async (req, res) => {
 
     res.status(200).json({ msg: 'OTP verified successfully' });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ msg: 'Server error' });
   }
 });
 
-// ---------------- RESET PASSWORD ----------------
+
 router.post('/reset-password', async (req, res) => {
   try {
     const { email, otp, password } = req.body;
@@ -194,10 +179,8 @@ router.post('/reset-password', async (req, res) => {
 
     res.status(200).json({ msg: 'Password has been successfully reset' });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ msg: 'Server error' });
   }
 });
-
 
 module.exports = router;

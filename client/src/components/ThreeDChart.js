@@ -3,13 +3,13 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
 import * as THREE from "three";
 
-// Bar component with hover effect
+
 function Bar({ position, height, width, depth, color, label, value, onHover }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
   
   useFrame((state) => {
-    // Add a subtle pulsing animation to hovered bars
+    
     if (hovered) {
       meshRef.current.scale.y = THREE.MathUtils.lerp(
         meshRef.current.scale.y, 
@@ -63,19 +63,19 @@ function Bar({ position, height, width, depth, color, label, value, onHover }) {
   );
 }
 
-// Grid and axes component
+
 function GridAndAxes({ xCol, yCol, data, maxValue, barWidth, spacing }) {
   const xAxisLength = data.length * (barWidth + spacing) - spacing;
   
   return (
     <group>
-      {/* Grid base */}
+     
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]}>
         <planeGeometry args={[xAxisLength + 2, 8]} />
         <meshStandardMaterial color="#f0f0f0" transparent opacity={0.5} />
       </mesh>
       
-      {/* Grid lines */}
+      
       <gridHelper args={[xAxisLength + 2, 10, "#888888", "#cccccc"]} />
       
       {/* Y-axis line */}
@@ -122,16 +122,16 @@ function GridAndAxes({ xCol, yCol, data, maxValue, barWidth, spacing }) {
 export default function ThreeDBarChart({ data, xCol, yCol }) {
   const [hoveredBar, setHoveredBar] = useState(null);
   
-  // Calculate dimensions
+ 
   const barWidth = 0.5;
   const spacing = 0.2;
   const depth = 0.3;
   const maxValue = Math.max(...data.map(row => row[yCol] || 0));
   
-  // Scale factor to ensure bars fit within view (max height = 6 units)
+
   const scaleFactor = 6 / maxValue;
   
-  // Colors for bars
+ 
   const colors = [
     "#4ecdc4", "#ff6b6b", "#45b7d1", "#f9c74f", 
     "#90be6d", "#577590", "#7209b7", "#f8961e"
@@ -182,7 +182,7 @@ export default function ThreeDBarChart({ data, xCol, yCol }) {
         />
       </Canvas>
       
-      {/* Info panel */}
+    
       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md border border-gray-200">
         <h3 className="font-semibold text-gray-800 mb-1">3D Bar Chart</h3>
         {hoveredBar ? (
@@ -194,7 +194,7 @@ export default function ThreeDBarChart({ data, xCol, yCol }) {
         )}
       </div>
       
-      {/* Controls info */}
+     
       <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md text-xs text-gray-600 border border-gray-200">
         Drag to rotate • Scroll to zoom
       </div>

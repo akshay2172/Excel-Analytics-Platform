@@ -1,4 +1,3 @@
-// models/User.js
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
@@ -8,7 +7,7 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   resetPasswordOtp: { type: String },
   resetPasswordExpires: { type: Date },
-  // ADD THESE MISSING FIELDS:
+
   isActive: { 
     type: Boolean, 
     default: true 
