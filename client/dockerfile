@@ -8,6 +8,7 @@ RUN npm install
 
 COPY . .
 RUN npm run build
+ENV NODE_OPTIONS=--max-old-space-size=2048
 
 # Production stage
 FROM nginx:alpine
