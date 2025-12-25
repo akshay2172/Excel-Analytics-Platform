@@ -132,10 +132,6 @@ Contributions are what make the open-source community such an amazing place to l
 
 Please ensure your code adheres to the existing style for consistency.
 
-## 📄 License
-
-Distributed under the MIT License. See the `LICENSE` file for more information.
-
 ## 👤 Author
 
 **Akshay**
